@@ -3,6 +3,7 @@ package com.minhpham;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Base64;
+import java.util.Scanner;
 
 class Idea_Encrypt_Text {
 
@@ -416,74 +417,26 @@ class Idea_Encrypt_Text {
         return decrypt;
     }
 
-    // UTF-8 --> Base64 --> ASCII (8 bits liên tiếp)
-    private static String convertTextToBinary(String text) throws UnsupportedEncodingException {
-        // Chuyển text về Base64
-        String textBase64 = Base64.getEncoder().encodeToString(text.getBytes("UTF-8")); // ví dụ: a -> YQ==
-
-        // Chuyển từng kí tự trong mảng Base64 sang bit
-        char[] arrChar = textBase64.toCharArray(); // Y Q = =
-
-        String result = "";
-        for (int i = 0; i < arrChar.length; i++) {
-            String cBinary = Integer.toBinaryString(arrChar[i]);
-
-            // Biểu diễn 1 kí tự ASCII cần 8 bit
-            if (cBinary.length() < 8) {
-                for (int j = cBinary.length(); j < 8; j++) {
-                    cBinary = '0' + cBinary;
-                }
-            }
-
-            result += cBinary;
-        }
-
-        return result;
-    }
-
-    private static String convertBinaryToText(String binary) throws UnsupportedEncodingException {
-        if (binary.length() < 8) {
-            for (int i = binary.length(); i < 8; i++) {
-                binary = '0' + binary;
-            }
-        }
-
-        String result = "";
-
-        // Đọc 8 bits liên tiếp trong mảng binary --> ra được 1 kí tự trong mảng ASCII
-        for (int i = 0; i < binary.length(); i++) {
-            if (i % 8 == 0) {
-                String cBinary = "";
-                for (int j = i; j < i + 8; j++) {
-                    cBinary += binary.charAt(j);
-                }
-
-                int cInteger = Integer.parseInt(cBinary, 2);
-
-                result += (char) cInteger;
-            }
-        }
-
-        String answer = new String(Base64.getDecoder().decode(result), "UTF-8");
-
-        return answer;
-    }
-
     public static void main(String args[]) throws UnsupportedEncodingException {
-//        // Tạo 52 khóa con
-        String key = "Minh";
-        String subKey[] = generateSubKey("11001000000000011001000000000010010110000000001100100000000000111110100000000100101100000000010101111000000001100100000");
+        Scanner scanner = new Scanner(System.in);
+
+// Tạo 52 khóa con
+//        String key = "11001000000000011001000000000010010110000000001100100000000000111110100000000100101100000000010101111000000001100100000";
+        System.out.print("Nhập key: ");
+        String key = scanner.nextLine();
+        String subKey[] = generateSubKey(key);
         System.out.println("----------------------------");
 
         // Mã hóa
-        String plainText = "MMH";
-        String cipherText = encrypt("10100110010000010100110010000010100110011001100110011111010", subKey);
-//        System.out.println("Ciphertext: " + convertBinaryToText(cipherText));
+//        String plainText = "10100110010000010100110010000010100110011001100110011111010";
+        System.out.print("Nhập plaintext: ");
+        String plainText = scanner.nextLine();
+        String cipherText = encrypt(plainText, subKey);
         System.out.println("----------------------------");
 
         // Giải mã
+        System.out.print("=> Ciphertext: ");
         String decrypt = decrypt(cipherText, subKey);
-//        System.out.println("Decrypt: " + convertBinaryToText(decrypt));
         System.out.println("----------------------------");
     }
 }
